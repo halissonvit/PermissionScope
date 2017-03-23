@@ -27,6 +27,8 @@ class ViewController: UIViewController {
             message: "We use this to send you\r\nspam and love notes")
         multiPscope.addPermission(LocationWhileInUsePermission(),
             message: "We use this to track\r\nwhere you live")
+        multiPscope.addPermission(SpeechPermission(),
+            message: "We use this to recognise your speech")
 
         // Other example permissions
 //        multiPscope.addPermission(MicrophonePermission(),message: "We can hear you")

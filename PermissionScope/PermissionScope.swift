@@ -979,6 +979,44 @@ typealias resultsForConfigClosure     = ([PermissionResult]) -> Void
     /// Returns whether PermissionScope is waiting for the user to enable/disable motion access or not.
     private var waitingForMotion = false
     
+    // MARK: Speech
+    
+    /**
+     Returns the current permission status for accessing the ASR.
+     
+     - returns: Permission status for the requested type.
+     */
+    public func statusSpeech() -> PermissionStatus {
+        let speechPermission = SFSpeechRecognizer.authorizationStatus()
+        switch speechPermission {
+        case .denied:
+            return .unauthorized
+        case .authorized:
+            return .authorized
+        default:
+            return .unknown
+        }
+    }
+    
+    /**
+     Requests access to the ASR, if necessary.
+     */
+    public func requestSpeech() {
+        let status = statusSpeech()
+        switch status {
+        case .unknown:
+            SFSpeechRecognizer.requestAuthorization { granted in
+                self.detectAndCallback()
+            }
+        case .unauthorized:
+            showDeniedAlert(.speech)
+        case .disabled:
+            showDisabledAlert(.speech)
+        case .authorized:
+            break
+        }
+    }
+
     // MARK: - UI
     
     /**
@@ -1230,6 +1268,9 @@ typealias resultsForConfigClosure     = ([PermissionResult]) -> Void
             permissionStatus = statusBluetooth()
         case .Motion:
             permissionStatus = statusMotion()
+        case .speech:
+            permissionStatus = statusSpeech()
+        default: break
         }
         
         // Perform completion
